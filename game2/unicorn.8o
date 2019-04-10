@@ -1,0 +1,738 @@
+﻿:alias x v0
+:alias y v1
+#v2 key signal
+:alias hiscore v3
+:alias floorX v4
+:alias rockX v5
+:alias rockY v6
+:alias sound v7
+:alias dir v8 #directions: 0=up,2=down
+:alias temp v9
+:alias counter vA
+:alias prev vC
+:alias score vD
+#vE compare-temp mandatory
+#vF mandatory
+:const stop 0
+:const up 0x00
+:const down 0x02
+:const right 0x01
+:const level1 20
+:const level2 40
+:const level3 60
+:const level4 80
+:const level5 100
+:const level6 120
+
+: dog
+	0x11 0x12 0x1C 0x16 0x9E 0x7C 0x7C 0x44
+: dog1
+  0x11 0x12 0x1C 0x16 0x9E 0x7C 0x7C 0x82
+: dog2
+  0x11 0x12 0x1C 0x16 0x9E 0x7C 0x7C 0x22
+: fly
+  0x01 0x72 0xFC 0x16 0x9E 0x7C 0x7C 0x44
+: fly1
+  0xF1 0x72 0x3C 0x16 0x9E 0x7C 0x7C 0x44
+: S
+	0xF0 0x80 0xF0 0x10 0xF0
+: C
+	0xF0 0x80 0x80 0x80 0xF0
+: O
+	0xF0 0x90 0x90 0x90 0xF0
+: R
+	0xF0 0x80 0x80 0x80 0x80
+: E
+	0xF0 0x90 0xF0 0x80 0xF0
+: P
+  0xF0 0x90 0xF0 0x80 0x80
+: ONE
+  0x20 0x60 0x20 0x20 0x70
+: N
+	0xF0 0x90 0x90 0x90 0x90
+: H
+	0x80 0x80 0xF0 0x90 0x90
+: TWO
+  0xF0 0x10 0xF0 0x80 0xF0
+: T
+	0xF8 0x20 0x20 0x20 0x20
+: A
+  0xE0 0x10 0xF0 0x90 0xF0
+: I
+  0x20 0x00 0x20 0x20 0x20
+: U
+	0x90 0x90 0x90 0x90 0xF0
+: J
+	0x10 0x10 0x10 0x10 0x70
+: M
+	0xF8 0xA8 0xA8 0xA8 0xA8
+: wpicl
+	0xFF 0x80 0xA2 0xA2 0xAA 0xAA 0x94 0x80 0xFF
+: keyr
+  0x80 0x80 0x80 0x80 0x80 0x80 0x80 0x80 0x80
+: pic1
+	0x10 0x28 0x24 0x12 0x11 0x08 0x0F 0x1E 0x70 0x80 0xA0 0x80 0x78 0x07 0x00
+: pic2
+	0x00 0x00 0x18 0x24 0x54 0x88 0x90 0x18 0x9C 0x1E 0x0F 0x0F 0x0F 0x87 0x83
+: pic3
+	0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xF0 0xF0 0xF0 0xF0
+: pic4
+	0x81 0x81 0x80 0x80
+: pic5
+	0xE0 0xC0 0x80
+#random objects
+: cactus
+	0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x28 0xA8 0xB8 0xA0 0xE0 0x20 0x20
+: BigCactus
+  0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xDB 0xDB 0xDF 0xDF 0xF8 0xF8 0x18
+: Cactus?
+  0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xD5 0xDD 0xF1 0x9F 0xF2 0x1E 0x10
+: rock1
+  0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x3C 0x7E 0xFF 0xFF 0xFF 0xFF 0xFF
+: rock2
+  0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x08 0x16 0x53 0x8A 0x42 0x54 0x18
+: RandomStillEnemy
+  0x00 0x3C 0x5A 0xFF 0x7E 0x24 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+: RandomFace
+  0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xF8 0xF8 0xD8 0x78 0x78 0xF8 0x60
+: CheckeredBox
+  0x00 0x00 0x7F 0xDF 0xFF 0x7F 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+: ShortPipeDown
+  0x3C 0x3C 0x3C 0x3C 0x7E
+: LongPipeDown10
+  0x7E 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E 0xFF 0xFF
+: LongPipeUp10
+	0xFF 0xFF 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E
+: ElectricWall
+  0xFF 0x30 0x40 0x7C 0x08 0x18 0x30 0x40 0x7C 0x18 0x20 0x30 0xFF
+: SuperLongPipeDown
+	0x7E 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E 0xFF 0xFF
+: SuperLongPipeUp
+  0xFF 0xFF 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E
+: PipeExt
+	0x7E 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E
+: BrokenPipeUp
+  0xE0 0xE0 0x78 0x78 0x7C 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E 0x7E
+: BrokenPipeDown
+  0x7E 0x7C 0x7C 0x3C 0x3C 0x3C 0x3C 0x08
+: MiddlePipeDown
+		0x7E 0x7E 0x7E 0x7E 0x7E 0xFF 0xFF
+: MiddlePipeUp
+		0xFF 0xFF 0x7E 0x7E 0x7E 0x7E 0x7E
+: ShortPipeUp
+	0x7E 0x3C 0x3C 0x3C 0x3C
+: Pipe1
+	0x7E 0x7E 0x3C 0x18 0x18 0x18 0x3C 0x3C 0x7E 0x7E 0x7E
+: main
+  score := 0
+  hiscore := 0
+  jump title
+
+: title
+	x := 3
+  y := 3
+  i := U
+  sprite x y 5
+  x += 5
+  i := N
+  sprite x y 5
+  x += 3
+  i := I
+  sprite x y 5
+  x += 4
+  i := C
+  sprite x y 5
+  x += 5
+  i := O
+  sprite x y 5
+  x += 5
+  i := R
+  sprite x y 5
+  x += 5
+  i := N
+  sprite x y 5
+  x := 3
+  y += 6
+  i := J
+  sprite x y 5
+  x += 5
+  i := U
+  sprite x y 5
+  x += 5
+  i := M
+  sprite x y 5
+  x += 6
+  i := P
+  sprite x y 5
+  x := 40
+  y := 0
+  i := pic1
+  sprite x y 15
+  x += 8
+  i := pic2
+  sprite x y 15
+  x += 8
+  i := pic3
+  sprite x y 15
+  x += -8
+  y += 15
+  i := pic4
+  sprite x y 4
+  x += 8
+  i := pic5
+  sprite x y 3
+  x := 5
+  y := 20
+  i := P
+  sprite x y 5
+  x += 5
+  i := R
+  sprite x y 5
+  x += 5
+  i := E
+  sprite x y 5
+  x += 5
+  i := S
+  sprite x y 5
+  x += 5
+  i := S
+  sprite x y 5
+  x += 7
+  i := ONE
+  sprite x y 5
+  x += 6
+  i := T
+  sprite x y 5
+  x += 6
+  i := H
+  sprite x y 5
+  i := E
+  x += 5
+  sprite x y 5
+  x += 5
+  i := N
+  sprite x y 5
+  x := 5
+  y += 6
+  i := TWO
+  sprite x y 5
+  x += 8
+  i := T
+  sprite x y 5
+  x += 6
+  i := O
+  sprite x y 5
+  x += 8
+  i := S
+  sprite x y 5
+  x += 5
+  i := T
+  sprite x y 5
+  x += 6
+  i := A
+  sprite x y 5
+  x += 5
+  i := R
+  sprite x y 5
+  x += 5
+  i := T
+  sprite x y 5
+  loop
+    v2 := 0x01
+    if v2 key then
+    jump instruction
+  again
+
+: instruction
+	clear
+	x := 28
+  y := 5
+  i := wpicl
+  sprite x y 9
+  x += 8
+  i := keyr
+  sprite x y 9
+  x := 16
+  y += 12
+  i := T
+  sprite x y 5
+  x += 6
+  i := O
+  sprite x y 5
+  x += 7
+  i := J
+  sprite x y 5
+  x += 5
+  i := U
+  sprite x y 5
+  x += 5
+  i := M
+  sprite x y 5
+  x += 6
+  i := P
+  sprite x y 5
+	loop
+    v2 := 0x02
+    if v2 key then
+    jump game
+  again
+
+: game
+  x := 0x01
+  y := 0x18
+  rockX := 0x3A
+  rockY := 0x11
+  sound := 0x01
+  dir := 0x01
+  prev := 0
+
+: label-loop
+  loop
+    #transition to flight
+    if y == 23 begin 
+    	if score == level1 then
+      	jump label-fly
+      if score == level3 then
+      	jump label-fly
+      if score == level5 then
+      	jump label-fly
+    end
+    if dir == up begin
+  		if prev == 0 then
+      	y += -1
+      if y <= 8 then
+      	prev := 1
+    end
+    if prev == 1 begin
+    	y += 1
+      if y >= 23 then
+      prev := 0
+      dir := 0x01
+    end
+		rockX += -1
+    if rockX == 0xFF begin
+  		rockX := random 0x22
+      score += 1
+      rockX += 0x40
+      temp := random 0x07
+    end
+  	clear
+    if rockX < 0x39 then
+    :call spawnRocks
+    if y < 0x17 begin
+    	i := dog1
+      sprite x y 8
+      else
+      	if counter < 5 begin
+      		i := dog
+      		sprite x y 8
+          counter += 1
+          else
+          	i := dog2
+            sprite x y 8
+            if counter == 10 then
+            	counter := 0
+            counter += 1
+        end
+    end
+    #Collision detection using flag F
+    if vF == 1 begin
+    	buzzer := sound
+      jump load-score
+    end
+
+: case-switch
+  #Case Switches
+  v2 := 0x05 #w
+  if v2 key begin
+    dir := 0x00
+    v2 := 0x05
+  end
+  #delay
+  vB := 1
+  delay := vB
+  loop
+    vB := delay
+    if vB != 0 then
+  again
+  again
+
+: load-score
+clear
+if score > hiscore then
+  hiscore := score
+i := S
+x := 1
+y := 1
+sprite x y 5
+i := C
+x += 5
+sprite x y 5
+i := O
+x += 5
+sprite x y 5
+i := R
+x += 5
+sprite x y 5
+i := E
+x += 5
+sprite x y 5
+i := 0xE00
+save vE
+i := 0xC00
+bcd score
+load v2
+v3 := v0
+v4 := v1
+v5 := v2
+y := 1
+x := 29
+i := hex v3
+sprite x y 5
+x := 34
+i := hex v4
+sprite x y 5
+x := 39
+i := hex v5
+sprite x y 5
+i := H
+x := 18
+y := 7
+sprite x y 5
+i := I
+x += 3
+sprite x y 5
+i := 0xE00
+load vE
+i := 0xC00
+bcd hiscore
+load v2
+v3 := v0
+v4 := v1
+v5 := v2
+y := 7
+x := 29
+i := hex v3
+sprite x y 5
+x := 34
+i := hex v4
+sprite x y 5
+x := 39
+i := hex v5
+sprite x y 5
+i := 0xE00
+load vE
+
+i := P
+x := 32
+y := 14
+sprite x y 5
+i := R
+x += 5
+sprite x y 5
+i := E
+x += 5
+sprite x y 5
+i := S
+x += 5
+sprite x y 5
+i := S
+x += 5
+sprite x y 5
+i := ONE
+x := 35
+y += 6
+sprite x y 5
+i := T
+x += 7
+sprite x y 5
+i := O
+x += 6
+sprite x y 5
+
+i := R
+x := 27
+y += 6
+sprite x y 5
+i := E
+x += 5
+sprite x y 5
+i := S
+x += 5
+sprite x y 5
+i := T
+x += 5
+sprite x y 5
+i := A
+x += 6
+sprite x y 5
+i := R
+x += 5
+sprite x y 5
+i := T
+x += 5
+sprite x y 5
+score := 0
+loop
+  v2 := 0x01
+  if v2 key then
+    jump game
+again
+
+: spawnRocks
+  #switch cases
+  if temp == 0 then
+    :call object1
+  if temp == 1 then
+    :call object2
+  if temp == 2 then
+    :call object3
+  if temp == 3 then
+    :call object4
+  if temp == 4 then
+    :call object5
+  if temp == 5 then
+    :call object6
+  if temp == 6 then
+    :call object7
+  if temp == 7 then
+    :call object8
+  return
+
+: object1
+  i := cactus
+  sprite rockX rockY 15
+  return
+
+: object2
+  i := BigCactus
+  sprite rockX rockY 15
+  return
+
+: object3
+  i := Cactus?
+  sprite rockX rockY 15
+  return
+
+: object4
+  i := rock1
+  sprite rockX rockY 15
+  return
+
+: object5
+  i := rock2
+  sprite rockX rockY 15
+  return
+
+: object6
+  i := RandomStillEnemy
+  sprite rockX rockY 15
+  return
+
+: object7
+  i := RandomFace
+  sprite rockX rockY 15
+  return
+
+: object8
+  i := CheckeredBox
+  sprite rockX rockY 15
+  return
+
+: label-fly
+  rockX := 0x64
+  rockY := 0x00
+  sound := 0x36
+  dir := 0x01
+  prev := 0
+  loop
+    if dir == up begin
+    	if y >= 0 then 
+      	y += -1
+    end
+    if dir == 0x01 begin
+    	if y <= 24 then
+       y += 1
+    end
+   clear
+   rockX += -1
+   clear
+   if rockX == 0xFD begin
+     rockX := 0x40
+     score += 1
+     temp := random 0x0D
+   end
+
+    
+  clear
+  if rockX < 0x39 then
+    :call spawnPipe
+  #flying animation
+    if counter < 5 begin
+      i := fly
+      sprite x y 8
+       counter += 1
+       else
+        i := fly1
+         sprite x y 8
+         if counter == 10 then
+          counter := 0
+         counter += 1
+     end
+
+  if vF == 1 begin
+    buzzer := sound
+    jump load-score
+  end
+  #case switch
+  v2 := 0x05 #w
+  if v2 key begin
+    dir := 0x00
+    prev := 0
+  else 
+   	dir := 0x01
+  end
+  
+  vB := 1
+  delay := vB
+  loop
+    vB := delay
+    if vB != 0 then
+  again
+  if score == level2 then
+    jump game
+  if score == level4 then
+    jump game
+  if score == level6 then
+    jump game
+  again
+
+: spawnPipe
+  if temp == 0 then
+    :call pipe1
+  if temp == 1 then
+    :call pipe2
+  if temp == 2 then
+    :call pipe3
+  if temp == 3 then
+    :call pipe4
+  if temp == 4 then
+    :call pipe5
+  if temp == 5 then
+    :call pipe6
+  if temp == 6 then
+    :call pipe7
+  if temp == 7 then
+    :call pipe8
+	if temp == 8 then
+		:call pipe9
+  if temp == 9 then
+  	:call pipe10
+  if temp == 10 then
+  	:call pipe11
+  if temp == 11 then
+  	:call pipe12
+  if temp == 12 then
+  	:call pipe13
+  if temp == 13 then
+  	:call pipe14
+  return
+
+: pipe1
+	i := PipeExt
+	rockY := 0
+	sprite rockX rockY 8
+	i := SuperLongPipeDown
+	rockY := 8
+	sprite rockX rockY 15
+	return
+
+: pipe2
+  i := LongPipeDown10
+  rockY := 0
+  sprite rockX rockY 10
+  return
+
+: pipe3
+  i := ElectricWall
+  rockY := 10
+  sprite rockX rockY 13
+  return
+
+: pipe4
+  i := LongPipeUp10
+  rockY := 22
+  sprite rockX rockY 10
+  return
+
+: pipe5
+  i := SuperLongPipeUp
+  rockY := 9
+  sprite rockX rockY 15
+  i := PipeExt
+  rockY += 15
+  sprite rockX rockY 8
+  return
+
+: pipe6
+  i := SuperLongPipeDown
+  rockY := 0
+  sprite rockX rockY 15
+  return
+
+: pipe7
+  i := BrokenPipeUp
+  rockY := 19
+  sprite rockX rockY 13
+  return
+
+: pipe8
+  i := BrokenPipeDown
+  rockY := 0
+  sprite rockX rockY 8
+  return
+
+: pipe9
+	i := MiddlePipeDown
+	rockY := 0
+	sprite rockX rockY 7
+	i := MiddlePipeUp
+	rockY := 25
+	sprite rockX rockY 7
+	return
+  
+: pipe10
+	i := ShortPipeUp
+  rockY := 27
+  sprite rockX rockY 5
+  return
+  
+: pipe11
+	i := pipe1
+  rockY := 20
+  sprite rockX rockY 11
+  return
+
+: pipe12
+	i := SuperLongPipeUp
+  rockY := 12
+  sprite rockX rockY 15
+  i := PipeExt
+  rockY += 15
+  sprite rockX rockY 5
+  return
+
+: pipe13
+	i := SuperLongPipeUp
+	rockY := 17
+  sprite rockX rockY 15
+  return
+
+: pipe14
+  i := MiddlePipeDown
+	rockY := 0
+	sprite rockX rockY 7
+	i := MiddlePipeUp
+	rockY := 25
+	sprite rockX rockY 7
+	return
